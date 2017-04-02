@@ -12,19 +12,16 @@
 #ifndef __have__ClickEncoder_h__
 #define __have__ClickEncoder_h__
 
-// ---Button defaults-------------------------------------------------------------
-
-#define BTN_DOUBLECLICKTIME  400  // second click within 400ms
-#define BTN_HOLDTIME        1000  // report held button after 1s
-
-
 // ----------------------------------------------------------------------------
 
 #include <stdint.h>
-#if defined(__AVR__)
+#if defined (__AVR__)
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
+#elif    defined(__arm__) // STM32duino
+#define cli() __asm volatile ("cpsid i");
+#define sei() __asm volatile ("cpsie i");
 #endif
 #include "Arduino.h"
 
@@ -64,13 +61,8 @@ public:
   } Button;
 
 public:
-  ClickEncoder(int8_t A, int8_t B, int8_t BTN = -1, 
-               uint8_t stepsPerNotch = 4, bool active = LOW);
-			   
-#ifndef WITHOUT_BUTTON
-  explicit ClickEncoder(int8_t BTN, bool active = false);   // Depricated.  Use Digtial Button instead
-
-#endif
+  ClickEncoder(uint8_t A, uint8_t B, uint8_t BTN = -1, 
+               uint8_t stepsPerNotch = 1, bool active = LOW);
 
   void service(void);  
   int16_t getValue(void);
@@ -82,18 +74,6 @@ public:
 
 #ifndef WITHOUT_BUTTON
 public:
-  void setDoubleClickTime(uint16_t durationMilliseconds)
-  {
-    buttonDoubleClickTime = durationMilliseconds;
-  }
-  
-public:
-  void setHoldTime(uint16_t durationMilliseconds)
-  {
-    buttonHoldTime = durationMilliseconds;
-  }
-  
-public:
   void setDoubleClickEnabled(const bool &d)
   {
     doubleClickEnabled = d;
@@ -102,28 +82,6 @@ public:
   const bool getDoubleClickEnabled()
   {
     return doubleClickEnabled;
-  }
-  
-public:
-  void setButtonHeldEnabled(const bool &d)
-  {
-    buttonHeldEnabled = d;
-  }
-
-  const bool getButtonHeldEnabled()
-  {
-    return buttonHeldEnabled;
-  }
-  
-public:
-  void setButtonOnPinZeroEnabled(const bool &d)
-  {
-    buttonOnPinZeroEnabled = d;
-  }
-
-  const bool getButtonOnPinZeroEnabled()
-  {
-    return buttonOnPinZeroEnabled;
   }
 #endif
 
@@ -141,14 +99,14 @@ public:
     return accelerationEnabled;
   }
 
-protected:
-  int8_t pinA;
-  int8_t pinB;
-  int8_t pinBTN;
-  bool pinsActive;
+private:
+  const uint8_t pinA;
+  const uint8_t pinB;
+  const uint8_t pinBTN;
+  const bool pinsActive;
   volatile int16_t delta;
   volatile int16_t last;
-  volatile uint8_t steps;
+  uint8_t steps;
   volatile uint16_t acceleration;
   bool accelerationEnabled;
 #if ENC_DECODER != ENC_NORMAL
@@ -157,34 +115,8 @@ protected:
 #ifndef WITHOUT_BUTTON
   volatile Button button;
   bool doubleClickEnabled;
-  bool buttonHeldEnabled;
-  bool buttonOnPinZeroEnabled = false;
-  bool analogInput = false;
-  uint16_t keyDownTicks = 0;
-  uint16_t doubleClickTicks = 0;
-  uint16_t buttonHoldTime = BTN_HOLDTIME;
-  uint16_t buttonDoubleClickTime = BTN_DOUBLECLICKTIME;
-  unsigned long lastButtonCheck = 0;
-  int16_t anlogActiveRangeLow = 0;
-  int16_t anlogActiveRangeHigh = 0;
-  bool getPinState();
 #endif
 };
-
-#ifndef WITHOUT_BUTTON
-class AnalogButton : public ClickEncoder
-{ 
-  public:
-    explicit AnalogButton(int8_t BTN, int16_t rangeLow, int16_t rangeHigh);  // Constructor for using analog input range as a button
-};
-
-class DigitalButton : public ClickEncoder
-{ 
-  public:
-    explicit DigitalButton(int8_t BTN, bool active = false);  // Constructor for using a button only
-};
-
-#endif
 
 // ----------------------------------------------------------------------------
 

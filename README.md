@@ -1,3 +1,5 @@
+KaraWin release: add STM32Duino support
+
 ClickEncoder
 =============
 

@@ -25,6 +25,9 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
+#elif    defined(__arm__) // STM32duino
+#define cli() __asm volatile ("cpsid i");
+#define sei() __asm volatile ("cpsie i");
 #endif
 #include "Arduino.h"
 

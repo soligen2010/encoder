@@ -50,7 +50,11 @@ ClickEncoder::ClickEncoder(int8_t A, int8_t B, int8_t BTN, uint8_t stepsPerNotch
     , analogInput(false)
 #endif
 {
+#if defined (__AVR__)
   uint8_t configType = (pinsActive == LOW) ? INPUT_PULLUP : INPUT;
+#elif    defined(__arm__)  				// STM32DUINO    
+  WiringPinMode configType = (pinsActive == LOW) ? INPUT_PULLUP : INPUT;
+#endif  
   if (pinA >= 0) {pinMode(pinA, configType);}
   if (pinB >= 0) {pinMode(pinB, configType);}
 #ifndef WITHOUT_BUTTON
@@ -77,7 +81,11 @@ ClickEncoder::ClickEncoder(int8_t BTN, bool active)
     button(Open), steps(1), analogInput(false),
     pinA(-1), pinB(-1), pinBTN(BTN), pinsActive(active)
 {
+#if defined (__AVR__)
   uint8_t configType = (pinsActive == LOW) ? INPUT_PULLUP : INPUT;
+#elif defined(__arm__)  				// STM32DUINO    
+  WiringPinMode configType = (pinsActive == LOW) ? INPUT_PULLUP : INPUT;
+#endif  
   if (pinBTN >= 0) {pinMode(pinBTN, configType);}
 }
 
@@ -93,7 +101,7 @@ DigitalButton::DigitalButton(int8_t BTN, bool active) : ClickEncoder(BTN, active
 // ----------------------------------------------------------------------------
 // Constructor for using analog input range as a button
 
-AnalogButton::AnalogButton(int8_t BTN, int16_t rangeLow, int16_t rangeHigh) : ClickEncoder(BTN, false)
+AnalogButton::AnalogButton(int8_t BTN, int16_t rangeLow, int16_t rangeHigh) : ClickEncoder(BTN, (bool)false)
 {
   pinMode(pinBTN, INPUT);
   

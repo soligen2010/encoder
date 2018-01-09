@@ -55,6 +55,7 @@
 class ClickEncoder
 {
 public:
+
   typedef enum Button_e {
     Open = 0,
     Closed,
@@ -68,37 +69,32 @@ public:
     
   } Button;
 
-public:
   ClickEncoder(int8_t A, int8_t B, int8_t BTN = -1, 
                uint8_t stepsPerNotch = 4, bool active = LOW);
 			   
 #ifndef WITHOUT_BUTTON
   explicit ClickEncoder(int8_t BTN, bool active = false);   // Depricated.  Use Digtial Button instead
-
 #endif
 
   void service(void);  
   int16_t getValue(void);
 
 #ifndef WITHOUT_BUTTON
-public:
   Button getButton(void);
 #endif
 
 #ifndef WITHOUT_BUTTON
-public:
   void setDoubleClickTime(uint16_t durationMilliseconds)
   {
     buttonDoubleClickTime = durationMilliseconds;
   }
   
-public:
+
   void setHoldTime(uint16_t durationMilliseconds)
   {
     buttonHoldTime = durationMilliseconds;
   }
   
-public:
   void setDoubleClickEnabled(const bool &d)
   {
     doubleClickEnabled = d;
@@ -108,8 +104,7 @@ public:
   {
     return doubleClickEnabled;
   }
-  
-public:
+
   void setButtonHeldEnabled(const bool &d)
   {
     buttonHeldEnabled = d;
@@ -120,7 +115,6 @@ public:
     return buttonHeldEnabled;
   }
   
-public:
   void setButtonOnPinZeroEnabled(const bool &d)
   {
     buttonOnPinZeroEnabled = d;
@@ -132,7 +126,6 @@ public:
   }
 #endif
 
-public:
   void setAccelerationEnabled(const bool &a)
   {
     accelerationEnabled = a;
